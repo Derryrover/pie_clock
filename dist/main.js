@@ -4822,24 +4822,6 @@ var author$project$Main$update = F2(
 				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 		}
 	});
-var author$project$Main$Hour = function (a) {
-	return {$: 'Hour', a: a};
-};
-var author$project$Main$Minute = function (a) {
-	return {$: 'Minute', a: a};
-};
-var author$project$Main$None = {$: 'None'};
-var elm$core$String$toInt = _String_toInt;
-var author$project$Main$toIntMsg = F2(
-	function (msg, str) {
-		var _n0 = elm$core$String$toInt(str);
-		if (_n0.$ === 'Nothing') {
-			return author$project$Main$None;
-		} else {
-			var val = _n0.a;
-			return msg(val);
-		}
-	});
 var elm$core$Basics$identity = function (x) {
 	return x;
 };
@@ -4859,6 +4841,71 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	}
 };
 var elm$html$Html$div = _VirtualDom_node('div');
+var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
+var elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
+var elm$svg$Svg$g = elm$svg$Svg$trustedNode('g');
+var elm$svg$Svg$path = elm$svg$Svg$trustedNode('path');
+var elm$svg$Svg$svg = elm$svg$Svg$trustedNode('svg');
+var elm$svg$Svg$Attributes$d = _VirtualDom_attribute('d');
+var elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
+var elm$svg$Svg$Attributes$stroke = _VirtualDom_attribute('stroke');
+var elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
+var elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
+var author$project$Clock$view = function (time) {
+	return A2(
+		elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				elm$html$Html$text('hello'),
+				A2(
+				elm$svg$Svg$svg,
+				_List_fromArray(
+					[
+						elm$svg$Svg$Attributes$viewBox('0 0 100 100'),
+						elm$svg$Svg$Attributes$width('300px')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						elm$svg$Svg$g,
+						_List_fromArray(
+							[
+								elm$svg$Svg$Attributes$stroke('none'),
+								elm$svg$Svg$Attributes$fill('lime')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								elm$svg$Svg$path,
+								_List_fromArray(
+									[
+										elm$svg$Svg$Attributes$d('\n              M 10 50\n              A 40 40 0 1 1 50 90\n              L 10 50\n              Z\n              ')
+									]),
+								_List_Nil)
+							]))
+					]))
+			]));
+};
+var author$project$Main$Hour = function (a) {
+	return {$: 'Hour', a: a};
+};
+var author$project$Main$Minute = function (a) {
+	return {$: 'Minute', a: a};
+};
+var author$project$Main$None = {$: 'None'};
+var elm$core$String$toInt = _String_toInt;
+var author$project$Main$toIntMsg = F2(
+	function (msg, str) {
+		var _n0 = elm$core$String$toInt(str);
+		if (_n0.$ === 'Nothing') {
+			return author$project$Main$None;
+		} else {
+			var val = _n0.a;
+			return msg(val);
+		}
+	});
 var elm$html$Html$input = _VirtualDom_node('input');
 var elm$json$Json$Encode$string = _Json_wrap;
 var elm$html$Html$Attributes$stringProperty = F2(
@@ -4983,7 +5030,8 @@ var author$project$Main$view = function (model) {
 						elm$html$Html$Events$onInput(
 						author$project$Main$toIntMsg(author$project$Main$Minute))
 					]),
-				_List_Nil)
+				_List_Nil),
+				author$project$Clock$view(model)
 			]));
 };
 var elm$browser$Browser$External = function (a) {

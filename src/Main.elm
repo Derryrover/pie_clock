@@ -56,7 +56,7 @@ view model =
       , onInput (toIntMsg Minute)
       ] 
       []
-    , Clock.view model
+    , (Clock.view model)
     ]
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -68,6 +68,8 @@ update msg model =
       ({ model | minutes = mn }, Cmd.none)
     None ->
       (model, Cmd.none)
+    -- ClockMsg Clock.Msg ->
+    --   (model, Cmd.none)
 
 
 subscriptions : Model -> Sub Msg
