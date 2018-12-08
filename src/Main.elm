@@ -31,7 +31,7 @@ main = Browser.element
 init : () -> (Model, Cmd Msg)
 init _ =
     (
-       Time.Model 10 25
+       Time.Model 11 25
       --, Cmd.batch [Cmd.map SvgElementMsg svgElementMsg]
       , Cmd.batch []
     )
