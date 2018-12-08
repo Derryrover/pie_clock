@@ -39,7 +39,10 @@ init _ =
 toIntMsg: (Int -> Msg) -> String -> Msg
 toIntMsg msg str =
   case String.toInt str of
-    Nothing -> None
+    Nothing -> 
+      case str of
+        "" -> msg 0
+        _  -> None
     Just val -> msg val
 
 view : Model -> Html Msg

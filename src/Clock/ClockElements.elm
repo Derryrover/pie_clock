@@ -27,6 +27,12 @@ type alias ClockPartsHours =
   , singles: List ClockPart
   }
 
+type alias ClockPartsMinutes = 
+  { quarters: List ClockPart
+  , fivers: List ClockPart
+  , minutes: List ClockPart
+  }
+
 
 hourMapToClockPart begin end numberOfKind = 
   { start = begin * degreesHour

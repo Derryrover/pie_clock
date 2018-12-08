@@ -5222,7 +5222,11 @@ var author$project$Main$toIntMsg = F2(
 	function (msg, str) {
 		var _n0 = elm$core$String$toInt(str);
 		if (_n0.$ === 'Nothing') {
-			return author$project$Main$None;
+			if (str === '') {
+				return msg(0);
+			} else {
+				return author$project$Main$None;
+			}
 		} else {
 			var val = _n0.a;
 			return msg(val);
