@@ -13,11 +13,12 @@ import ClockElements exposing (
   ClockPart,
   ClockPartsHours )
 
-radius = 50
-radiusString = String.fromInt radius
+-- radius = 50
+-- radiusString = String.fromInt radius
 
-renderHour clockPart = 
+renderHour clockPart radius = 
   let
+    radiusString = String.fromFloat radius
     beginX = String.fromFloat (radius*(cos(degrees(toFloat (clockPart.start - 90)))))
     beginY = String.fromFloat (radius*(sin(degrees(toFloat (clockPart.start - 90)))))
     endX   = String.fromFloat (radius*(cos(degrees(toFloat (clockPart.end - 90)))))
@@ -48,6 +49,6 @@ renderHour clockPart =
       []
     ] 
 
-renderHours clockParts = 
-  List.map renderHour clockParts
+renderHours clockParts radius = 
+  List.map (\n-> renderHour n radius) clockParts
 

@@ -5151,8 +5151,6 @@ var author$project$ClockElements$minutesToClockParts = function (minute) {
 		minutesList);
 	return {fivers: fiverListClockParts, minutes: minutesListClockParts, quarters: quarterListClockpart};
 };
-var author$project$ClockRenderer$radius = 50;
-var author$project$ClockRenderer$radiusString = elm$core$String$fromInt(author$project$ClockRenderer$radius);
 var elm$core$Basics$cos = _Basics_cos;
 var elm$core$Basics$pi = _Basics_pi;
 var elm$core$Basics$degrees = function (angleInDegrees) {
@@ -5184,48 +5182,56 @@ var elm$svg$Svg$path = elm$svg$Svg$trustedNode('path');
 var elm$svg$Svg$Attributes$d = _VirtualDom_attribute('d');
 var elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
 var elm$svg$Svg$Attributes$stroke = _VirtualDom_attribute('stroke');
-var author$project$ClockRenderer$renderHour = function (clockPart) {
-	var fillColor = function () {
-		var _n0 = clockPart.oddEven;
-		if (_n0.$ === 'Even') {
-			return 'lime';
-		} else {
-			return 'blue';
-		}
-	}();
-	var endY = elm$core$String$fromFloat(
-		author$project$ClockRenderer$radius * elm$core$Basics$sin(
-			elm$core$Basics$degrees(clockPart.end - 90)));
-	var endX = elm$core$String$fromFloat(
-		author$project$ClockRenderer$radius * elm$core$Basics$cos(
-			elm$core$Basics$degrees(clockPart.end - 90)));
-	var beginY = elm$core$String$fromFloat(
-		author$project$ClockRenderer$radius * elm$core$Basics$sin(
-			elm$core$Basics$degrees(clockPart.start - 90)));
-	var beginX = elm$core$String$fromFloat(
-		author$project$ClockRenderer$radius * elm$core$Basics$cos(
-			elm$core$Basics$degrees(clockPart.start - 90)));
-	return A2(
-		elm$svg$Svg$g,
-		_List_fromArray(
-			[
-				elm$svg$Svg$Attributes$stroke('none'),
-				elm$svg$Svg$Attributes$fill(fillColor)
-			]),
-		_List_fromArray(
-			[
-				A2(
-				elm$svg$Svg$path,
-				_List_fromArray(
-					[
-						elm$svg$Svg$Attributes$d('M 0 0 ' + ('L ' + (beginX + (' ' + (beginY + (' ' + ('A ' + (author$project$ClockRenderer$radiusString + (' ' + (author$project$ClockRenderer$radiusString + (' 0 0 1 ' + (endX + (' ' + (endY + (' ' + ('L ' + (endX + (' ' + (endY + ' ')))))))))))))))))))
-					]),
-				_List_Nil)
-			]));
-};
-var author$project$ClockRenderer$renderHours = function (clockParts) {
-	return A2(elm$core$List$map, author$project$ClockRenderer$renderHour, clockParts);
-};
+var author$project$ClockRenderer$renderHour = F2(
+	function (clockPart, radius) {
+		var radiusString = elm$core$String$fromFloat(radius);
+		var fillColor = function () {
+			var _n0 = clockPart.oddEven;
+			if (_n0.$ === 'Even') {
+				return 'lime';
+			} else {
+				return 'blue';
+			}
+		}();
+		var endY = elm$core$String$fromFloat(
+			radius * elm$core$Basics$sin(
+				elm$core$Basics$degrees(clockPart.end - 90)));
+		var endX = elm$core$String$fromFloat(
+			radius * elm$core$Basics$cos(
+				elm$core$Basics$degrees(clockPart.end - 90)));
+		var beginY = elm$core$String$fromFloat(
+			radius * elm$core$Basics$sin(
+				elm$core$Basics$degrees(clockPart.start - 90)));
+		var beginX = elm$core$String$fromFloat(
+			radius * elm$core$Basics$cos(
+				elm$core$Basics$degrees(clockPart.start - 90)));
+		return A2(
+			elm$svg$Svg$g,
+			_List_fromArray(
+				[
+					elm$svg$Svg$Attributes$stroke('none'),
+					elm$svg$Svg$Attributes$fill(fillColor)
+				]),
+			_List_fromArray(
+				[
+					A2(
+					elm$svg$Svg$path,
+					_List_fromArray(
+						[
+							elm$svg$Svg$Attributes$d('M 0 0 ' + ('L ' + (beginX + (' ' + (beginY + (' ' + ('A ' + (radiusString + (' ' + (radiusString + (' 0 0 1 ' + (endX + (' ' + (endY + (' ' + ('L ' + (endX + (' ' + (endY + ' ')))))))))))))))))))
+						]),
+					_List_Nil)
+				]));
+	});
+var author$project$ClockRenderer$renderHours = F2(
+	function (clockParts, radius) {
+		return A2(
+			elm$core$List$map,
+			function (n) {
+				return A2(author$project$ClockRenderer$renderHour, n, radius);
+			},
+			clockParts);
+	});
 var elm$core$List$append = F2(
 	function (xs, ys) {
 		if (!ys.b) {
@@ -5254,9 +5260,6 @@ var author$project$Clock$view = function (time) {
 	var allMinutes = elm$core$List$concat(
 		_List_fromArray(
 			[clockPartMinutes.minutes, clockPartMinutes.fivers, clockPartMinutes.quarters]));
-	var allHoursMinutes = elm$core$List$concat(
-		_List_fromArray(
-			[allMinutes, bothHours]));
 	return A2(
 		elm$html$Html$div,
 		_List_Nil,
@@ -5270,7 +5273,12 @@ var author$project$Clock$view = function (time) {
 						elm$svg$Svg$Attributes$viewBox('-100 -100 200 200'),
 						elm$svg$Svg$Attributes$width('300px')
 					]),
-				author$project$ClockRenderer$renderHours(allHoursMinutes))
+				elm$core$List$concat(
+					_List_fromArray(
+						[
+							A2(author$project$ClockRenderer$renderHours, allMinutes, 70),
+							A2(author$project$ClockRenderer$renderHours, bothHours, 50)
+						])))
 			]));
 };
 var author$project$Main$Hour = function (a) {

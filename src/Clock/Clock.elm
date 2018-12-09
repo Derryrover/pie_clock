@@ -23,7 +23,7 @@ view time =
     bothHours = List.concat [quarterHours, singleHours]
     clockPartMinutes = minutesToClockParts time.minutes
     allMinutes = List.concat [clockPartMinutes.minutes, clockPartMinutes.fivers, clockPartMinutes.quarters]
-    allHoursMinutes = List.concat [allMinutes, bothHours]
+    -- allHoursMinutes = List.concat [allMinutes, bothHours]
   in
     div 
       [] 
@@ -31,6 +31,6 @@ view time =
       , svg 
         [ viewBox "-100 -100 200 200", width "300px" ] 
         -- (renderHours bothHours)
-        (renderHours allHoursMinutes)
+        (List.concat [renderHours allMinutes 70, renderHours bothHours 50])
       ]
 
