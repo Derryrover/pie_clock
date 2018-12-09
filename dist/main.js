@@ -5095,6 +5095,62 @@ var author$project$ClockElements$hoursToClockParts = function (hour) {
 		singlesList);
 	return {quarters: quarterListClockpart, singles: singleListClockParts};
 };
+var author$project$ClockElements$minutesHour = 60;
+var author$project$ClockElements$degreesMinute = (author$project$ClockElements$degreesCircle / author$project$ClockElements$minutesHour) | 0;
+var author$project$ClockElements$minutesMapToClockPart = F3(
+	function (begin, end, numberOfKind) {
+		return {
+			end: end * author$project$ClockElements$degreesMinute,
+			oddEven: author$project$SelfMadeMath$intToOddEven(numberOfKind),
+			start: begin * author$project$ClockElements$degreesMinute
+		};
+	});
+var author$project$ClockElements$minutesToClockParts = function (minute) {
+	var minutes = A2(elm$core$List$range, 1, minute);
+	var amountQuarters = (minute / 15) | 0;
+	var quarterList = A2(elm$core$List$take, 15 * amountQuarters, minutes);
+	var quarterList15 = A2(
+		elm$core$List$filter,
+		function (n) {
+			return !(n % 15);
+		},
+		quarterList);
+	var quarterListClockpart = A2(
+		elm$core$List$map,
+		function (n) {
+			return A3(author$project$ClockElements$minutesMapToClockPart, n - 15, n, 2);
+		},
+		quarterList15);
+	var amountMinutes = minute % 5;
+	var amountFivers = ((minute % 15) / 5) | 0;
+	var fiverList = A2(
+		elm$core$List$take,
+		amountFivers * 5,
+		A2(elm$core$List$drop, 15 * amountQuarters, minutes));
+	var fiverList5 = A2(
+		elm$core$List$filter,
+		function (n) {
+			return !(n % 5);
+		},
+		fiverList);
+	var fiverListClockParts = A2(
+		elm$core$List$map,
+		function (n) {
+			return A3(author$project$ClockElements$minutesMapToClockPart, n - 5, n, n - (15 * amountQuarters));
+		},
+		fiverList5);
+	var minutesList = A2(
+		elm$core$List$drop,
+		amountFivers * 5,
+		A2(elm$core$List$drop, 3 * amountQuarters, minutes));
+	var minutesListClockParts = A2(
+		elm$core$List$map,
+		function (n) {
+			return A3(author$project$ClockElements$minutesMapToClockPart, n - 1, n, (n - (15 * amountQuarters)) - (5 * amountFivers));
+		},
+		minutesList);
+	return {fivers: fiverListClockParts, minutes: minutesListClockParts, quarters: quarterListClockpart};
+};
 var author$project$ClockRenderer$radius = 50;
 var author$project$ClockRenderer$radiusString = elm$core$String$fromInt(author$project$ClockRenderer$radius);
 var elm$core$Basics$cos = _Basics_cos;
@@ -5188,12 +5244,19 @@ var elm$svg$Svg$svg = elm$svg$Svg$trustedNode('svg');
 var elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
 var elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
 var author$project$Clock$view = function (time) {
-	var clockParts = author$project$ClockElements$hoursToClockParts(time.hours);
-	var quarters = clockParts.quarters;
-	var singles = clockParts.singles;
-	var both = elm$core$List$concat(
+	var clockPartMinutes = author$project$ClockElements$minutesToClockParts(time.minutes);
+	var clockPartHours = author$project$ClockElements$hoursToClockParts(time.hours);
+	var quarterHours = clockPartHours.quarters;
+	var singleHours = clockPartHours.singles;
+	var bothHours = elm$core$List$concat(
 		_List_fromArray(
-			[quarters, singles]));
+			[quarterHours, singleHours]));
+	var allMinutes = elm$core$List$concat(
+		_List_fromArray(
+			[clockPartMinutes.minutes, clockPartMinutes.fivers, clockPartMinutes.quarters]));
+	var allHoursMinutes = elm$core$List$concat(
+		_List_fromArray(
+			[allMinutes, bothHours]));
 	return A2(
 		elm$html$Html$div,
 		_List_Nil,
@@ -5207,7 +5270,7 @@ var author$project$Clock$view = function (time) {
 						elm$svg$Svg$Attributes$viewBox('-100 -100 200 200'),
 						elm$svg$Svg$Attributes$width('300px')
 					]),
-				author$project$ClockRenderer$renderHours(both))
+				author$project$ClockRenderer$renderHours(allHoursMinutes))
 			]));
 };
 var author$project$Main$Hour = function (a) {

@@ -1,5 +1,6 @@
 module ClockElements exposing (
   hoursToClockParts,
+  minutesToClockParts,
   ClockPart,
   ClockPartsHours )
 
@@ -14,7 +15,7 @@ degreesCircle = 360
 hoursEtmal = 12
 minutesHour = 60
 degreesHour = degreesCircle // hoursEtmal --30
-degreesMinute = degreesCircle // degreesHour --6
+degreesMinute = degreesCircle // minutesHour --6
 
 type alias ClockPart = 
   { start: Degrees
@@ -40,6 +41,12 @@ hourMapToClockPart begin end numberOfKind =
   , oddEven = intToOddEven numberOfKind
   }
 
+minutesMapToClockPart begin end numberOfKind = 
+  { start = begin * degreesMinute
+  , end = end * degreesMinute
+  , oddEven = intToOddEven numberOfKind
+  }
+
 --hoursToClockParts: Int -> ClockPartsHours
 hoursToClockParts hour = 
   let
@@ -54,6 +61,26 @@ hoursToClockParts hour =
   in
     { quarters = quarterListClockpart
     , singles = singleListClockParts
+    }
+
+minutesToClockParts minute = 
+  let
+    minutes = List.range 1 minute
+    amountQuarters = minute // 15
+    amountFivers = (remainderBy 15 minute) // 5
+    amountMinutes = remainderBy 5 minute
+    quarterList = List.take (15*amountQuarters) minutes
+    fiverList = List.take (amountFivers * 5) (List.drop (15*amountQuarters) minutes)
+    minutesList = List.drop (amountFivers * 5) (List.drop (3*amountQuarters) minutes)
+    quarterList15 = List.filter (\n-> (remainderBy 15 n)== 0) quarterList
+    fiverList5 = List.filter (\n-> (remainderBy 5 n)== 0) fiverList
+    quarterListClockpart = List.map (\n -> (minutesMapToClockPart (n-15) n 2) ) quarterList15
+    fiverListClockParts =  List.map (\n -> (minutesMapToClockPart (n-5) n (n - 15*amountQuarters))) fiverList5
+    minutesListClockParts = List.map (\n -> (minutesMapToClockPart (n-1) n (n - 15*amountQuarters - 5* amountFivers))) minutesList
+  in
+    { quarters = quarterListClockpart
+    , fivers = fiverListClockParts
+    , minutes = minutesListClockParts
     }
 
 
