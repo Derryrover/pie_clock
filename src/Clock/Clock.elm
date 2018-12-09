@@ -4,6 +4,7 @@ import Html exposing (Html, div, text, input)
 import Html.Attributes exposing (style, class,value)
 import Svg exposing (circle, line, svg, g)
 import Svg.Attributes exposing (..)
+-- import SelfMadeMath exposing (OddEven(..))
 
 import Time
 import ClockElements exposing (
@@ -12,25 +13,35 @@ import ClockElements exposing (
   ClockPart,
   ClockPartsHours )
 import ClockRenderer exposing(
-  renderHours )
+  renderHours, 
+  clockPartWholeCircle )
+
+
 
 view: Time.Model -> Html a
 view time = 
   let 
     clockPartHours = hoursToClockParts time.hours
-    singleHours = clockPartHours.singles
-    quarterHours = clockPartHours.quarters
-    bothHours = List.concat [quarterHours, singleHours]
+    bothHours = List.concat [clockPartHours.quarters, clockPartHours.singles]
     clockPartMinutes = minutesToClockParts time.minutes
-    allMinutes = List.concat [clockPartMinutes.minutes, clockPartMinutes.fivers, clockPartMinutes.quarters]
-    -- allHoursMinutes = List.concat [allMinutes, bothHours]
+    quarterFiverMinutes = List.concat [clockPartMinutes.minutes, clockPartMinutes.fivers, clockPartMinutes.quarters]
   in
     div 
       [] 
-      [ text "hello"
-      , svg 
+      [ svg 
         [ viewBox "-100 -100 200 200", width "300px" ] 
         -- (renderHours bothHours)
-        (List.concat [renderHours allMinutes 70, renderHours bothHours 50])
+        (List.concat 
+          [ 
+            -- renderHours clockPartWholeCircle      74 "clock_background"   "clock_background"
+           renderHours clockPartWholeCircle      70 "clock_background"   "clock_background"
+          , renderHours clockPartMinutes.minutes  70 "clock_minutes_even"    "clock_minutes_odd"
+          , renderHours clockPartMinutes.fivers   70 "clock_minutes_fivers_even"    "clock_minutes_fivers_odd"
+          , renderHours clockPartMinutes.quarters 70 "clock_minutes_quarters"    "clock_minutes_quarters"
+          , renderHours clockPartWholeCircle      50 "clock_background"   "clock_background"
+          , renderHours clockPartHours.singles    50 "clock_hours_main"     "clock_hours_odd"
+          , renderHours clockPartHours.quarters   50 "clock_hours_main"     "clock_hours_main"
+          ]
+        )
       ]
 

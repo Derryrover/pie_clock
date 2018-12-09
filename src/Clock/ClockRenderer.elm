@@ -1,7 +1,7 @@
-module ClockRenderer exposing (renderHours)
+module ClockRenderer exposing (renderHours, clockPartWholeCircle)
 
 import Html exposing (Html, div, text, input)
-import Html.Attributes exposing (style, class,value)
+import Html.Attributes exposing (style,value)
 import Svg exposing (circle, line, svg, g)
 import Svg.Attributes exposing (..)
 import SelfMadeMath exposing (OddEven(..))
@@ -16,7 +16,7 @@ import ClockElements exposing (
 -- radius = 50
 -- radiusString = String.fromInt radius
 
-renderHour clockPart radius = 
+renderHour clockPart radius evenColor oddColor = 
   let
     radiusString = String.fromFloat radius
     beginX = String.fromFloat (radius*(cos(degrees(toFloat (clockPart.start - 90)))))
@@ -25,11 +25,17 @@ renderHour clockPart radius =
     endY   = String.fromFloat (radius*(sin(degrees(toFloat (clockPart.end - 90)))))
     fillColor = 
       case clockPart.oddEven of
-        Even -> "lime"
-        Odd  -> "blue" 
+        Even -> evenColor
+        Odd  -> oddColor 
+    classColor = 
+      case clockPart.oddEven of
+        Even -> evenColor
+        Odd  -> oddColor
   in
   g 
-    [stroke "none", fill fillColor]
+    [ stroke "none"
+    -- , fill fillColor
+    , class classColor]
     [ Svg.path
       [ d 
           (
@@ -49,6 +55,29 @@ renderHour clockPart radius =
       []
     ] 
 
-renderHours clockParts radius = 
-  List.map (\n-> renderHour n radius) clockParts
+renderHours clockParts radius evenColor oddColor= 
+  List.map (\n-> renderHour n radius evenColor oddColor) clockParts
+
+clockPartWholeCircle = 
+  [
+    { start = 0
+    , end = 90
+    , oddEven = Odd
+    }
+    ,
+    { start = 90
+    , end = 180
+    , oddEven = Odd
+    }
+    ,
+    { start = 180
+    , end = 270
+    , oddEven = Odd
+    }
+    ,
+    { start = 270
+    , end = 360
+    , oddEven = Odd
+    }
+  ]
 

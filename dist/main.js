@@ -4792,7 +4792,7 @@ var elm$json$Json$Decode$errorToStringHelp = F2(
 var elm$core$Platform$Cmd$batch = _Platform_batch;
 var author$project$Main$init = function (_n0) {
 	return _Utils_Tuple2(
-		A2(author$project$Time$Model, 11, 25),
+		A2(author$project$Time$Model, 11, 39),
 		elm$core$Platform$Cmd$batch(_List_Nil));
 };
 var elm$core$Platform$Sub$batch = _Platform_batch;
@@ -5151,6 +5151,13 @@ var author$project$ClockElements$minutesToClockParts = function (minute) {
 		minutesList);
 	return {fivers: fiverListClockParts, minutes: minutesListClockParts, quarters: quarterListClockpart};
 };
+var author$project$ClockRenderer$clockPartWholeCircle = _List_fromArray(
+	[
+		{end: 90, oddEven: author$project$SelfMadeMath$Odd, start: 0},
+		{end: 180, oddEven: author$project$SelfMadeMath$Odd, start: 90},
+		{end: 270, oddEven: author$project$SelfMadeMath$Odd, start: 180},
+		{end: 360, oddEven: author$project$SelfMadeMath$Odd, start: 270}
+	]);
 var elm$core$Basics$cos = _Basics_cos;
 var elm$core$Basics$pi = _Basics_pi;
 var elm$core$Basics$degrees = function (angleInDegrees) {
@@ -5179,18 +5186,18 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 var elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
 var elm$svg$Svg$g = elm$svg$Svg$trustedNode('g');
 var elm$svg$Svg$path = elm$svg$Svg$trustedNode('path');
+var elm$svg$Svg$Attributes$class = _VirtualDom_attribute('class');
 var elm$svg$Svg$Attributes$d = _VirtualDom_attribute('d');
-var elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
 var elm$svg$Svg$Attributes$stroke = _VirtualDom_attribute('stroke');
-var author$project$ClockRenderer$renderHour = F2(
-	function (clockPart, radius) {
+var author$project$ClockRenderer$renderHour = F4(
+	function (clockPart, radius, evenColor, oddColor) {
 		var radiusString = elm$core$String$fromFloat(radius);
 		var fillColor = function () {
-			var _n0 = clockPart.oddEven;
-			if (_n0.$ === 'Even') {
-				return 'lime';
+			var _n1 = clockPart.oddEven;
+			if (_n1.$ === 'Even') {
+				return evenColor;
 			} else {
-				return 'blue';
+				return oddColor;
 			}
 		}();
 		var endY = elm$core$String$fromFloat(
@@ -5199,6 +5206,14 @@ var author$project$ClockRenderer$renderHour = F2(
 		var endX = elm$core$String$fromFloat(
 			radius * elm$core$Basics$cos(
 				elm$core$Basics$degrees(clockPart.end - 90)));
+		var classColor = function () {
+			var _n0 = clockPart.oddEven;
+			if (_n0.$ === 'Even') {
+				return evenColor;
+			} else {
+				return oddColor;
+			}
+		}();
 		var beginY = elm$core$String$fromFloat(
 			radius * elm$core$Basics$sin(
 				elm$core$Basics$degrees(clockPart.start - 90)));
@@ -5210,7 +5225,7 @@ var author$project$ClockRenderer$renderHour = F2(
 			_List_fromArray(
 				[
 					elm$svg$Svg$Attributes$stroke('none'),
-					elm$svg$Svg$Attributes$fill(fillColor)
+					elm$svg$Svg$Attributes$class(classColor)
 				]),
 			_List_fromArray(
 				[
@@ -5223,12 +5238,12 @@ var author$project$ClockRenderer$renderHour = F2(
 					_List_Nil)
 				]));
 	});
-var author$project$ClockRenderer$renderHours = F2(
-	function (clockParts, radius) {
+var author$project$ClockRenderer$renderHours = F4(
+	function (clockParts, radius, evenColor, oddColor) {
 		return A2(
 			elm$core$List$map,
 			function (n) {
-				return A2(author$project$ClockRenderer$renderHour, n, radius);
+				return A4(author$project$ClockRenderer$renderHour, n, radius, evenColor, oddColor);
 			},
 			clockParts);
 	});
@@ -5244,28 +5259,23 @@ var elm$core$List$concat = function (lists) {
 	return A3(elm$core$List$foldr, elm$core$List$append, _List_Nil, lists);
 };
 var elm$html$Html$div = _VirtualDom_node('div');
-var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
 var elm$svg$Svg$svg = elm$svg$Svg$trustedNode('svg');
 var elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
 var elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
 var author$project$Clock$view = function (time) {
 	var clockPartMinutes = author$project$ClockElements$minutesToClockParts(time.minutes);
-	var clockPartHours = author$project$ClockElements$hoursToClockParts(time.hours);
-	var quarterHours = clockPartHours.quarters;
-	var singleHours = clockPartHours.singles;
-	var bothHours = elm$core$List$concat(
-		_List_fromArray(
-			[quarterHours, singleHours]));
-	var allMinutes = elm$core$List$concat(
+	var quarterFiverMinutes = elm$core$List$concat(
 		_List_fromArray(
 			[clockPartMinutes.minutes, clockPartMinutes.fivers, clockPartMinutes.quarters]));
+	var clockPartHours = author$project$ClockElements$hoursToClockParts(time.hours);
+	var bothHours = elm$core$List$concat(
+		_List_fromArray(
+			[clockPartHours.quarters, clockPartHours.singles]));
 	return A2(
 		elm$html$Html$div,
 		_List_Nil,
 		_List_fromArray(
 			[
-				elm$html$Html$text('hello'),
 				A2(
 				elm$svg$Svg$svg,
 				_List_fromArray(
@@ -5276,8 +5286,13 @@ var author$project$Clock$view = function (time) {
 				elm$core$List$concat(
 					_List_fromArray(
 						[
-							A2(author$project$ClockRenderer$renderHours, allMinutes, 70),
-							A2(author$project$ClockRenderer$renderHours, bothHours, 50)
+							A4(author$project$ClockRenderer$renderHours, author$project$ClockRenderer$clockPartWholeCircle, 70, 'clock_background', 'clock_background'),
+							A4(author$project$ClockRenderer$renderHours, clockPartMinutes.minutes, 70, 'clock_minutes_even', 'clock_minutes_odd'),
+							A4(author$project$ClockRenderer$renderHours, clockPartMinutes.fivers, 70, 'clock_minutes_fivers_even', 'clock_minutes_fivers_odd'),
+							A4(author$project$ClockRenderer$renderHours, clockPartMinutes.quarters, 70, 'clock_minutes_quarters', 'clock_minutes_quarters'),
+							A4(author$project$ClockRenderer$renderHours, author$project$ClockRenderer$clockPartWholeCircle, 50, 'clock_background', 'clock_background'),
+							A4(author$project$ClockRenderer$renderHours, clockPartHours.singles, 50, 'clock_hours_main', 'clock_hours_odd'),
+							A4(author$project$ClockRenderer$renderHours, clockPartHours.quarters, 50, 'clock_hours_main', 'clock_hours_main')
 						])))
 			]));
 };
